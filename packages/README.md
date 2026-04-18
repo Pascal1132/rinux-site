@@ -15,11 +15,12 @@ Add an entry to `registry.json`:
 {
   "name": "package-name",
   "version": "1.0.0",
-  "url": "https://rinux.pascalparent.ca/packages/pkgs/package-name-1.0.0.tar"
+  "url": "https://rinux.pascalparent.ca/packages/pkgs/package-name-1.0.0.tar",
+  "sha256": "64-lowercase-hex-chars-of-the-.tar-archive"
 }
 ```
 
-Packages are `.tar` archives stored in `packages/pkgs/` and extracted into `/usr/bin/` on the target system.
+Packages are `.tar` archives stored in `packages/pkgs/` and extracted into `/usr/bin/` on the target system. `rpkg` verifies the archive SHA-256 before extraction.
 
 ## Local development
 

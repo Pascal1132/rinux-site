@@ -2,11 +2,13 @@
   {
     "name": "hello",
     "version": "1.0.0",
-    "url": "https://rinux.pascalparent.ca/packages/pkgs/hello-1.0.0.tar"
+    "url": "https://rinux.pascalparent.ca/packages/pkgs/hello-1.0.0.tar",
+    "sha256": "2b7f27f40079e5391a953c0ea45f828185d2b7a2fe23ffa0bcdc15461ea60bf2"
   },
   {
     "name": "busybox-extra",
     "version": "1.36.0",
-    "url": "https://rinux.pascalparent.ca/packages/pkgs/busybox-extra-1.36.0.tar"
+    "url": "https://rinux.pascalparent.ca/packages/pkgs/busybox-extra-1.36.0.tar",
+    "sha256": "3af4a7d793ae04e62ceb6c8cc55b7119234d878cdde608f9f9ce79d03ff2717b"
   }
 ]
