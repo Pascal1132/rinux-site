@@ -1,0 +1,68 @@
+name: Refresh Rinux release metadata
+
+# Pulls the latest Rinux GitHub Release into packages/release.json so the landing
+# page can display version, date, size, and SHA256 without hardcoding.
+#
+# Triggers:
+#   - repository_dispatch: fired by Rinux build-iso.yml on every published release
+#   - schedule: daily safety net in case a dispatch is missed
+#   - workflow_dispatch: manual refresh
+
+on:
+  repository_dispatch:
+    types: [rinux-release]
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-release
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch latest release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p packages
+          TMP=$(mktemp)
+          gh api /repos/Pascal1132/Rinux/releases/latest > "$TMP"
+          # Extract only stable fields we need for the landing.
+          # Tolerate missing assets (e.g. prerelease without the "-latest" alias).
+          jq '
+            . as $rel
+            | {
+                tag:        $rel.tag_name,
+                name:       $rel.name,
+                published:  $rel.published_at,
+                prerelease: $rel.prerelease,
+                html_url:   $rel.html_url,
+                body:       $rel.body,
+                iso:        ([$rel.assets[] | select(.name == "rinux-latest.iso")      | {url: .browser_download_url, size: .size}] | first // null),
+                sha256_url: ([$rel.assets[] | select(.name == "rinux-latest.iso.sha256") | .browser_download_url]                   | first // null)
+              }
+          ' "$TMP" > packages/release.json
+          echo "Updated packages/release.json:"
+          cat packages/release.json
+
+      - name: Commit if changed
+        run: |
+          set -e
+          if git diff --quiet -- packages/release.json; then
+            echo "No changes to release.json"
+            exit 0
+          fi
+          git config user.name  "rinux-site-bot"
+          git config user.email "rinux-site-bot@users.noreply.github.com"
+          git add packages/release.json
+          git commit -m "chore(site): refresh release metadata"
+          git push

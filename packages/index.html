@@ -3,41 +3,157 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rinux Packages</title>
+  <title>Rinux — a Rust microkernel OS</title>
+  <meta name="description" content="Rinux is a Rust-written microkernel. Download the latest bootable ISO, browse the rpkg registry, or read the docs.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
-    h1 { font-size: 2.4rem; font-weight: 700; color: #f0f6fc; margin-bottom: .5rem; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 3rem 1.25rem; }
+    main { width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 2.25rem; }
+    .hero { text-align: center; }
+    h1 { font-size: 3rem; font-weight: 800; color: #f0f6fc; letter-spacing: -0.02em; }
     h1 span { color: #58a6ff; }
-    p { color: #8b949e; margin-bottom: 1.5rem; font-size: 1.1rem; }
-    code { background: #161b22; padding: .15em .4em; border-radius: 4px; font-size: .9em; color: #79c0ff; }
-    .registry { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem 1.5rem; margin-bottom: 2rem; font-family: monospace; font-size: .85rem; color: #8b949e; max-width: 100%; word-break: break-all; }
-    .pkgs { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-    .pkg { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem 1.5rem; min-width: 180px; text-align: center; }
-    .pkg .name { font-weight: 600; color: #f0f6fc; font-size: 1.1rem; }
-    .pkg .ver { color: #58a6ff; font-size: .85rem; margin-top: .25rem; }
-    footer { margin-top: 3rem; color: #484f58; font-size: .8rem; }
+    .tagline { color: #8b949e; margin-top: .6rem; font-size: 1.15rem; }
+    h2 { font-size: 1.25rem; font-weight: 700; color: #f0f6fc; margin-bottom: .9rem; letter-spacing: -0.01em; }
+    section { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 1.4rem 1.6rem; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88rem; color: #79c0ff; }
+    code { background: #0d1117; padding: .15em .45em; border-radius: 4px; }
+    .cta-row { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-top: .25rem; }
+    .btn { display: inline-flex; align-items: center; gap: .5rem; background: #238636; color: #fff; border: 1px solid #2ea043; padding: .7rem 1.2rem; border-radius: 7px; font-weight: 600; text-decoration: none; transition: background .15s; }
+    .btn:hover { background: #2ea043; text-decoration: none; }
+    .btn.secondary { background: transparent; border-color: #30363d; color: #c9d1d9; }
+    .btn.secondary:hover { background: #21262d; border-color: #8b949e; }
+    .meta { color: #8b949e; font-size: .85rem; display: flex; gap: 1.2rem; flex-wrap: wrap; margin-top: .8rem; }
+    .meta span { display: inline-flex; align-items: center; gap: .35rem; }
+    .sha { background: #0d1117; padding: .6rem .8rem; border-radius: 6px; margin-top: .8rem; font-size: .78rem; color: #8b949e; overflow-x: auto; white-space: nowrap; }
+    .sha strong { color: #c9d1d9; }
+    .pkgs { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .pkg { background: #0d1117; border: 1px solid #30363d; border-radius: 7px; padding: .85rem 1.1rem; min-width: 150px; text-align: center; }
+    .pkg .name { font-weight: 600; color: #f0f6fc; font-size: 1rem; }
+    .pkg .ver { color: #58a6ff; font-size: .8rem; margin-top: .2rem; font-family: ui-monospace, monospace; }
+    .registry-url { background: #0d1117; padding: .6rem .8rem; border-radius: 6px; font-family: ui-monospace, monospace; font-size: .82rem; color: #8b949e; word-break: break-all; margin-top: .6rem; }
     a { color: #58a6ff; text-decoration: none; }
     a:hover { text-decoration: underline; }
+    footer { margin-top: 2.5rem; color: #484f58; font-size: .8rem; text-align: center; }
+    .links { display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; margin-top: .4rem; }
+    .muted { color: #8b949e; }
+    .pill { background: #0d1117; border: 1px solid #30363d; border-radius: 999px; padding: .1rem .55rem; font-size: .75rem; color: #8b949e; }
   </style>
 </head>
 <body>
-  <h1>Rinux <span>Packages</span></h1>
-  <p>Official package registry for <code>rpkg</code></p>
-  <div class="registry">https://rinux.pascalparent.ca/packages/registry.json</div>
-  <div class="pkgs" id="pkgs"></div>
+  <main>
+    <div class="hero">
+      <h1>Rin<span>ux</span></h1>
+      <p class="tagline">A Rust microkernel OS — built from scratch, <code>no_std</code>, higher-half x86_64.</p>
+    </div>
+
+    <section>
+      <h2>Download</h2>
+      <p class="muted" id="dl-intro">Loading latest release…</p>
+      <div class="cta-row" id="dl-actions" style="display:none">
+        <a id="dl-iso" class="btn" href="#" download>Download ISO</a>
+        <a id="dl-release" class="btn secondary" href="#" target="_blank" rel="noopener">Release notes</a>
+        <a class="btn secondary" href="https://github.com/Pascal1132/Rinux/releases" target="_blank" rel="noopener">All releases</a>
+      </div>
+      <div class="meta" id="dl-meta" style="display:none">
+        <span id="dl-version"></span>
+        <span id="dl-size"></span>
+        <span id="dl-date"></span>
+      </div>
+      <div class="sha" id="dl-sha" style="display:none"></div>
+      <p class="muted" style="margin-top:.9rem; font-size:.85rem;">
+        Stable direct link:
+        <a href="https://github.com/Pascal1132/Rinux/releases/latest/download/rinux-latest.iso">
+          <code>rinux-latest.iso</code>
+        </a>
+        — always points to the most recent GA release.
+      </p>
+    </section>
+
+    <section>
+      <h2>Boot in QEMU</h2>
+      <pre class="mono" style="background:#0d1117;padding:.9rem 1rem;border-radius:6px;overflow-x:auto;color:#c9d1d9;font-size:.85rem;line-height:1.5;">qemu-system-x86_64 -m 512M -cdrom rinux-latest.iso -serial stdio</pre>
+    </section>
+
+    <section>
+      <h2>rpkg registry</h2>
+      <p class="muted">Consumed by the in-kernel package manager <code>rpkg</code>.</p>
+      <div class="registry-url">https://rinux.pascalparent.ca/packages/registry.json</div>
+      <div class="pkgs" id="pkgs" style="margin-top:1rem"></div>
+    </section>
+
+    <footer>
+      <div class="links">
+        <a href="https://github.com/Pascal1132/Rinux">GitHub</a>
+        <a href="https://github.com/Pascal1132/Rinux/blob/main/README.md">Docs</a>
+        <a href="https://github.com/Pascal1132/Rinux/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/Pascal1132/Rinux/blob/main/LICENSE">License</a>
+      </div>
+      <p style="margin-top:.9rem">Built in Rust. <span class="pill">no_std</span> <span class="pill">x86_64</span> <span class="pill">microkernel</span></p>
+    </footer>
+  </main>
 
   <script>
+    // --- Package registry ---
     fetch("packages/registry.json")
       .then(r => r.json())
       .then(pkgs => {
         const el = document.getElementById("pkgs");
+        if (!Array.isArray(pkgs) || pkgs.length === 0) {
+          el.innerHTML = '<em class="muted">No packages yet.</em>';
+          return;
+        }
         pkgs.forEach(p => {
           el.insertAdjacentHTML("beforeend",
-            `<div class="pkg"><div class="name">${p.name}</div><div class="ver">${p.version}</div></div>`);
+            `<div class="pkg"><div class="name">${p.name}</div><div class="ver">${p.version || ""}</div></div>`);
         });
       })
-      .catch(() => { document.getElementById("pkgs").innerHTML = "<em>Could not load packages</em>"; });
+      .catch(() => { document.getElementById("pkgs").innerHTML = '<em class="muted">Could not load packages.</em>'; });
+
+    // --- Latest release ---
+    const LATEST_ISO = "https://github.com/Pascal1132/Rinux/releases/latest/download/rinux-latest.iso";
+    function fmtSize(n) {
+      if (!n) return "";
+      if (n >= 1024*1024) return (n / (1024*1024)).toFixed(1) + " MB";
+      if (n >= 1024) return (n / 1024).toFixed(1) + " KB";
+      return n + " B";
+    }
+    function fmtDate(iso) {
+      if (!iso) return "";
+      try { return new Date(iso).toISOString().slice(0, 10); } catch { return ""; }
+    }
+    function applyRelease(rel) {
+      const intro   = document.getElementById("dl-intro");
+      const actions = document.getElementById("dl-actions");
+      const meta    = document.getElementById("dl-meta");
+      const isoA    = document.getElementById("dl-iso");
+      const relA    = document.getElementById("dl-release");
+      const ver     = document.getElementById("dl-version");
+      const size    = document.getElementById("dl-size");
+      const date    = document.getElementById("dl-date");
+      const shaEl   = document.getElementById("dl-sha");
+      isoA.href = (rel && rel.iso && rel.iso.url) || LATEST_ISO;
+      relA.href = (rel && rel.html_url) || "https://github.com/Pascal1132/Rinux/releases/latest";
+      if (rel && rel.tag) {
+        intro.style.display = "none";
+        actions.style.display = "flex";
+        meta.style.display = "flex";
+        ver.textContent  = rel.tag;
+        size.textContent = rel.iso ? fmtSize(rel.iso.size) : "";
+        date.textContent = fmtDate(rel.published);
+        if (rel.sha256_url) {
+          shaEl.style.display = "block";
+          shaEl.innerHTML = '<strong>Verify:</strong> <a href="' + rel.sha256_url + '">SHA256 checksum</a> — <code>sha256sum -c rinux-latest.iso.sha256</code>';
+        }
+      } else {
+        intro.textContent = "Latest release metadata unavailable. Use the stable direct link below.";
+        actions.style.display = "flex";
+      }
+    }
+    fetch("packages/release.json", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(applyRelease)
+      .catch(() => applyRelease(null));
   </script>
 </body>
 </html>
+
