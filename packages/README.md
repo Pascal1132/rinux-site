@@ -28,3 +28,19 @@ For testing, point rpkg at a local registry:
 ```sh
 rpkg --registry-url file:///path/to/test-registry.json install my-package
 ```
+
+## DOOM package
+
+The `doom` package is built from the pinned `doomgeneric-src` gitlink. It uses
+the Rinux framebuffer backend and expects a legally obtained `DOOM.WAD` at
+runtime. Sound and mouse input are not yet supported.
+
+Build the package from the site repository root:
+
+```sh
+./packages/build-doom.sh
+```
+
+The script creates `packages/pkgs/doom-1.0.0.tar` and prints its SHA-256. The
+registry entry must be reviewed and updated separately; package construction
+does not silently rewrite `registry.json`.
