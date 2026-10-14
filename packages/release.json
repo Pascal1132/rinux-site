@@ -1,15 +1,21 @@
 {
-  "tag": "dev-9f60100",
+  "tag": "dev-01c1cdf",
   "channel": "development",
   "prerelease": true,
-  "commit": "9f601004598448ab5909d2a848a09c64550132fd",
-  "published": "2026-10-14T19:48:26Z",
+  "commit": "01c1cdf9ec3a8af2ee22cccfb4d48d50110c6326",
+  "published": "2026-10-14T20:23:19Z",
   "iso": {
     "url": "https://github.com/Pascal1132/rinux-site/releases/download/dev-latest/rinux-dev-latest.iso",
     "latest": "https://github.com/Pascal1132/rinux-site/releases/download/dev-latest/rinux-dev-latest.iso",
     "size": 33937408,
-    "sha256": "991483bc166a493fc8f30a97f6c48dbfcfcd456bc91d0431f3d551c358685fd5"
+    "sha256": "564729138aa451e19a52ee694a1100b85cc0702d78e42ef48fda6acd3e4109e6"
   },
   "sha256_url": "https://github.com/Pascal1132/rinux-site/releases/download/dev-latest/rinux-dev-latest.iso.sha256",
+  "boot_tested": "qemu-q35",
+  "vm_kit": {
+    "url": "https://github.com/Pascal1132/rinux-site/releases/download/dev-latest/rinux-vm-kit.zip",
+    "size": 2550093,
+    "sha256": "61fe2a854ca1ddf2017bf3f4b2bfa69f2843ed7558823d8163cc80e0d7166bd3"
+  },
   "html_url": "https://github.com/Pascal1132/rinux-site/releases/tag/dev-latest"
 }
