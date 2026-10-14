@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boot sequence and profiles — Rinux docs</title><meta name="description" content="From Limine handoff to PID 1. Boot is modelled as typed phases with preconditions; the idle loop starts once userspace is ready.">
+<link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><div><a class="brand" href="../../">Rin<span>ux</span></a><a href="./">Docs</a><a href="architecture.html">Overview</a><a href="boot.html" class=on>Boot</a><a href="memory.html">Memory</a><a href="scheduler.html">Scheduler</a><a href="syscalls.html">Syscalls</a><a href="storage.html">VFS &amp; storage</a><a href="networking.html">Networking</a><a href="gui.html">GUI</a><a href="engineering.html">Engineering</a></div></nav>
+<main><div><h1>Boot sequence and profiles</h1><p class="lede" style="margin-top:.6rem">From Limine handoff to PID 1. Boot is modelled as typed phases with preconditions; the idle loop starts once userspace is ready.</p></div>
+<section><h2>Phases</h2><div class="flow"><div class="node "><b>EarlyBoot</b><small>Limine responses, build identity</small></div><div class="node "><b>MemoryReady</b><small>physical map, paging, heap</small></div><div class="node "><b>ProtectionReady</b><small>CPU protections (NX, SMEP/SMAP, KPTI)</small></div><div class="node "><b>InterruptsReady</b><small>GDT/IDT/TSS, ACPI, APIC</small></div><div class="node "><b>DevicesReady</b><small>driver probe, PCI</small></div><div class="node "><b>StorageReady</b><small>block + filesystems</small></div><div class="node hi"><b>UserspaceReady</b><small>scheduler, PID 1, idle</small></div></div><p class="caption">Phase names come from <code>PhaseId</code> in <code>kernel/src/boot_phase.rs</code>; each transition declares its preconditions.</p></section><section><h2>What happens</h2><ol style="padding-left:1.3rem">
+<li>Validate Limine responses and the build identity (commit + tree) injected by the binary crate.</li>
+<li>Bring up physical memory, paging and the heap; enable CPU protections.</li>
+<li>Install interrupt tables and architectural state for the BSP.</li>
+<li>Discover ACPI/APIC and pick a CPU policy.</li>
+<li>Initialise drivers and storage.</li>
+<li>Start the scheduler and launch PID 1, publish runtime state, enter idle.</li></ol>
+<p class="callout">Not every transition is independently qualified: <code>boot::run</code> and several init paths remain monolithic, and the driver registry is not the single probe authority.</p></section><section><h2>CPU profiles</h2><table><tr><th>Profile</th><th>Behaviour</th></tr>
+<tr><td><code>ContainedSingleCpu</code> (default)</td><td>Only the boot CPU schedules work.</td></tr>
+<tr><td><code>r13-smp-probe</code> feature</td><td>Experimental: wakes APs for bounded timer / IPI proofs.</td></tr>
+<tr><td><code>r13-smp-sched-probe</code></td><td>Also runs one pinned kernel task per AP. Never in product builds.</td></tr></table>
+<p class="muted">Profile policy lives in <code>kernel-core::boot_profile</code> so it is unit-tested on the host.</p></section><section><h2>Try it</h2><pre><code>just run-minimal   # minimal profile
+just run           # default profile
+just run-gui       # development GUI via SDL</code></pre></section></main>
+<footer>Documentation reflects observed state; see the <a href="https://github.com/Pascal1132/Rinux">repository</a> for the authoritative records.</footer>
+</body></html>

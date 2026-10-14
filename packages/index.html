@@ -3,50 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rinux — a Rust microkernel OS</title>
-  <meta name="description" content="Rinux is a Rust-written microkernel. Download the latest bootable ISO, browse the rpkg registry, or read the docs.">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 3rem 1.25rem; }
-    main { width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 2.25rem; }
-    .hero { text-align: center; }
-    h1 { font-size: 3rem; font-weight: 800; color: #f0f6fc; letter-spacing: -0.02em; }
-    h1 span { color: #58a6ff; }
-    .tagline { color: #8b949e; margin-top: .6rem; font-size: 1.15rem; }
-    h2 { font-size: 1.25rem; font-weight: 700; color: #f0f6fc; margin-bottom: .9rem; letter-spacing: -0.01em; }
-    section { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 1.4rem 1.6rem; }
-    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88rem; color: #79c0ff; }
-    code { background: #0d1117; padding: .15em .45em; border-radius: 4px; }
-    .cta-row { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-top: .25rem; }
-    .btn { display: inline-flex; align-items: center; gap: .5rem; background: #238636; color: #fff; border: 1px solid #2ea043; padding: .7rem 1.2rem; border-radius: 7px; font-weight: 600; text-decoration: none; transition: background .15s; }
-    .btn:hover { background: #2ea043; text-decoration: none; }
-    .btn.secondary { background: transparent; border-color: #30363d; color: #c9d1d9; }
-    .btn.secondary:hover { background: #21262d; border-color: #8b949e; }
-    .meta { color: #8b949e; font-size: .85rem; display: flex; gap: 1.2rem; flex-wrap: wrap; margin-top: .8rem; }
-    .meta span { display: inline-flex; align-items: center; gap: .35rem; }
-    .sha { background: #0d1117; padding: .6rem .8rem; border-radius: 6px; margin-top: .8rem; font-size: .78rem; color: #8b949e; overflow-x: auto; white-space: nowrap; }
-    .sha strong { color: #c9d1d9; }
-    .pkgs { display: flex; gap: .75rem; flex-wrap: wrap; }
-    .pkg { background: #0d1117; border: 1px solid #30363d; border-radius: 7px; padding: .85rem 1.1rem; min-width: 150px; text-align: center; }
-    .pkg .name { font-weight: 600; color: #f0f6fc; font-size: 1rem; }
-    .pkg .ver { color: #58a6ff; font-size: .8rem; margin-top: .2rem; font-family: ui-monospace, monospace; }
-    .registry-url { background: #0d1117; padding: .6rem .8rem; border-radius: 6px; font-family: ui-monospace, monospace; font-size: .82rem; color: #8b949e; word-break: break-all; margin-top: .6rem; }
-    a { color: #58a6ff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    footer { margin-top: 2.5rem; color: #484f58; font-size: .8rem; text-align: center; }
-    .links { display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; margin-top: .4rem; }
-    .muted { color: #8b949e; }
-    .pill { background: #0d1117; border: 1px solid #30363d; border-radius: 999px; padding: .1rem .55rem; font-size: .75rem; color: #8b949e; }
-  </style>
+  <title>Rinux — an experimental Rust x86_64 kernel</title>
+  <meta name="description" content="Rinux is an experimental x86_64 operating-system kernel written in Rust. Download the latest bootable ISO, read how each subsystem works, or browse the rpkg registry.">
+  <link rel="stylesheet" href="packages/style.css">
 </head>
 <body>
+  <nav class="top"><div><a class="brand" href="./">Rin<span>ux</span></a><a href="#download">Download</a><a href="#how">How it works</a><a href="packages/docs/">Docs</a><a href="#rpkg">Packages</a><a href="https://github.com/Pascal1132/Rinux">Source</a></div></nav>
   <main>
     <div class="hero">
       <h1>Rin<span>ux</span></h1>
-      <p class="tagline">A Rust microkernel OS — built from scratch, <code>no_std</code>, higher-half x86_64.</p>
+      <p class="tagline">An experimental x86_64 kernel written in Rust — <code>no_std</code>, higher-half, built from scratch.</p>
+      <div class="cta-row" style="justify-content:center">
+        <a class="btn" href="#download">Download ISO</a>
+        <a class="btn secondary" href="packages/docs/">Read the docs</a>
+      </div>
     </div>
 
     <section>
+      <h2>What it is — and isn’t</h2>
+      <p>Rinux is a research platform for memory isolation, SMP, storage recovery and a userspace desktop. It is a monolithic kernel with a Ring 3 userland and a Linux-like syscall <em>subset</em>.</p>
+      <p class="callout">It is not production-ready, not a daily driver and not a Linux-compatible general-purpose OS. Every claim here is bound to reproducible evidence; open defects are tracked publicly.</p>
+      <div class="cards" style="margin-top:1rem">
+        <div class="card"><b>CPU</b><span class="tag ok">single CPU by default</span> <span class="tag warn">SMP experimental</span></div>
+        <div class="card"><b>Storage</b><span class="tag warn">VirtIO-blk + ext2 in QEMU</span></div>
+        <div class="card"><b>Security</b><span class="tag warn">W^X, KPTI, SMAP; gate open</span></div>
+        <div class="card"><b>GUI</b><span class="tag bad">prototype</span></div>
+        <div class="card"><b>Syscalls</b><span class="tag warn">6 / 342 complete</span></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>How it fits together</h2>
+      <div class="stack">
+        <div class="layer user"><b>Ring 3 — userland</b><div class="flow"><div class="node"><b>init</b></div><div class="node"><b>shell &amp; tools</b></div><div class="node"><b>rpkg</b></div><div class="node"><b>compositor + gui-shell</b></div></div></div>
+        <div class="layer kern"><b>Syscall boundary → Ring 0 — kernel</b><div class="flow"><div class="node"><b>mm</b></div><div class="node"><b>scheduler</b></div><div class="node"><b>VFS</b></div><div class="node"><b>net</b></div><div class="node"><b>drivers</b></div></div></div>
+        <div class="layer hw"><b>Limine → arch/x86_64 → QEMU / hardware</b></div>
+      </div>
+      <p class="muted" style="margin-top:1rem">Each part has its own page with diagrams and an honest list of what is still open:</p>
+      <div class="cards">
+        <a class="card" href="packages/docs/boot.html"><b>Boot</b><span>seven typed phases to PID 1</span></a>
+        <a class="card" href="packages/docs/memory.html"><b>Memory</b><span>frames, VMAs, COW, KPTI, usercopy</span></a>
+        <a class="card" href="packages/docs/scheduler.html"><b>Scheduler</b><span>per-CPU runqueues, locking rules</span></a>
+        <a class="card" href="packages/docs/syscalls.html"><b>Syscalls</b><span>generated dispatch, 342-entry inventory</span></a>
+        <a class="card" href="packages/docs/storage.html"><b>VFS &amp; storage</b><span>filesystems over VirtIO-blk</span></a>
+        <a class="card" href="packages/docs/networking.html"><b>Networking</b><span>feature-gated stack and drivers</span></a>
+        <a class="card" href="packages/docs/gui.html"><b>GUI</b><span>prototype vs target design</span></a>
+        <a class="card" href="packages/docs/engineering.html"><b>Engineering</b><span>evidence-driven verification</span></a>
+      </div>
+    </section>
+
+    <section id="download">
       <h2>Download</h2>
       <p class="muted" id="dl-intro">Loading latest release…</p>
       <div class="cta-row" id="dl-actions" style="display:none">
@@ -64,26 +70,31 @@
         <a href="/packages/releases/rinux-latest.iso">
           <code>rinux-latest.iso</code>
         </a>
-        — always points to the most recent GA release.
+        — points to the most recent published release.
       </p>
     </section>
-
     <section>
       <h2>Boot in QEMU</h2>
-      <pre class="mono" style="background:#0d1117;padding:.9rem 1rem;border-radius:6px;overflow-x:auto;color:#c9d1d9;font-size:.85rem;line-height:1.5;">qemu-system-x86_64 -m 512M -cdrom rinux-latest.iso -serial stdio</pre>
+      <pre><code>qemu-system-x86_64 -m 512M -cdrom rinux-latest.iso -serial stdio</code></pre>
     </section>
 
     <section>
-      <h2>rpkg registry</h2>
-      <p class="muted">Consumed by the in-kernel package manager <code>rpkg</code>.</p>
-      <div class="registry-url">https://rinux.pascalparent.ca/packages/registry.json</div>
-      <div class="pkgs" id="pkgs" style="margin-top:1rem"></div>
+      <h2>Build from source</h2>
+      <pre><code>git clone https://github.com/Pascal1132/Rinux.git
+cd Rinux
+just check        # lint, ABI and policy checks, unit tests
+just run-minimal  # boot in QEMU
+just run-gui      # development GUI (SDL)</code></pre>
     </section>
 
-    <footer>
-      <p>Built in Rust. <span class="pill">no_std</span> <span class="pill">x86_64</span> <span class="pill">microkernel</span></p>
-    </footer>
+    <section id="rpkg">
+      <h2>rpkg registry</h2>
+      <p class="muted">Consumed by the in-kernel package manager <code>rpkg</code>.</p>
+      <p style="margin-top:.6rem"><code>https://rinux.pascalparent.ca/packages/registry.json</code></p>
+      <div class="pkgs" id="pkgs"></div>
+    </section>
   </main>
+  <footer>Built in Rust. <span class="tag">no_std</span> <span class="tag">x86_64</span> <span class="tag">monolithic</span> <span class="tag">experimental</span></footer>
 
   <script>
     // --- Package registry ---
