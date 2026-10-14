@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="packages/style.css">
 </head>
 <body>
-  <nav class="top"><div><a class="brand" href="./">Rin<span>ux</span></a><a href="#download">Download</a><a href="#how">How it works</a><a href="packages/docs/">Docs</a><a href="#rpkg">Packages</a><a href="https://github.com/Pascal1132/Rinux">Source</a></div></nav>
+  <nav class="top"><div><a class="brand" href="./">Rin<span>ux</span></a><a href="#download">Download</a><a href="#vm">Try in a VM</a><a href="#how">How it works</a><a href="packages/docs/">Docs</a><a href="#rpkg">Packages</a><a href="https://github.com/Pascal1132/Rinux">Source</a></div></nav>
   <main>
     <div class="hero">
       <h1>Rin<span>ux</span></h1>
@@ -72,6 +72,20 @@
         — the most recent published development build.
       </p>
     </section>
+    <section id="vm">
+      <h2>Try it in VirtualBox or VMware</h2>
+      <p class="muted">A ready-made VM kit: no install, no disk. Rinux runs from memory and nothing is saved.</p>
+      <div class="cta-row"><a id="vm-kit" class="btn" href="#" style="display:none">Download VM kit (.zip)</a></div>
+      <p id="vm-pending" class="muted" style="margin-top:.6rem">The VM kit appears here once a development build is published.</p>
+      <ol style="padding-left:1.3rem;margin-top:.9rem">
+        <li>Unzip the kit.</li>
+        <li><b>VirtualBox:</b> double-click <code>rinux-virtualbox.bat</code> (Linux/macOS: <code>sh rinux-virtualbox.sh</code>).</li>
+        <li><b>VMware:</b> open <code>Rinux.vmx</code> and power on.</li>
+        <li>After a few seconds you get a text console with an <code>rxsh&gt;</code> prompt. Click in the window and type <code>help</code>.</li>
+      </ol>
+      <p class="muted" style="margin-top:.8rem;font-size:.85rem">Why no VMDK/VDI disk? Rinux only has a VirtIO disk driver, which neither hypervisor offers. The kit was booted in VirtualBox 7.2 and VMware Player; there is no graphical desktop in this build. <a href="packages/docs/vm.html">Details</a>.</p>
+    </section>
+
     <section>
       <h2>Boot in QEMU</h2>
       <pre><code>qemu-system-x86_64 -m 512M -cdrom rinux-latest.iso -serial stdio</code></pre>
@@ -143,6 +157,12 @@ just run-gui      # development GUI (SDL)</code></pre>
         actions.style.display = "flex";
         meta.style.display = "flex";
         ver.textContent  = rel.tag;
+        if (rel.vm_kit && rel.vm_kit.url) {
+          const k = document.getElementById("vm-kit");
+          k.href = rel.vm_kit.url; k.style.display = "inline-flex";
+          k.textContent = "Download VM kit (.zip, " + fmtSize(rel.vm_kit.size) + ")";
+          document.getElementById("vm-pending").style.display = "none";
+        }
         document.getElementById("dl-dev").style.display = rel.channel === "development" ? "block" : "none";
         size.textContent = rel.iso ? fmtSize(rel.iso.size) : "";
         date.textContent = fmtDate(rel.published);
