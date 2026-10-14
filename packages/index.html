@@ -65,12 +65,11 @@
         <span id="dl-date"></span>
       </div>
       <div class="sha" id="dl-sha" style="display:none"></div>
+      <p class="callout" id="dl-dev" style="display:none;margin-top:.9rem">Development build — not a release and not qualified. It is built from the commit shown below and may not boot on your setup.</p>
       <p class="muted" style="margin-top:.9rem; font-size:.85rem;">
         Stable direct link:
-        <a href="/packages/releases/rinux-latest.iso">
-          <code>rinux-latest.iso</code>
-        </a>
-        — points to the most recent published release.
+        <a href="https://github.com/Pascal1132/rinux-site/releases/download/dev-latest/rinux-dev-latest.iso"><code>rinux-dev-latest.iso</code></a>
+        — the most recent published development build.
       </p>
     </section>
     <section>
@@ -144,13 +143,15 @@ just run-gui      # development GUI (SDL)</code></pre>
         actions.style.display = "flex";
         meta.style.display = "flex";
         ver.textContent  = rel.tag;
+        document.getElementById("dl-dev").style.display = rel.channel === "development" ? "block" : "none";
         size.textContent = rel.iso ? fmtSize(rel.iso.size) : "";
         date.textContent = fmtDate(rel.published);
         if (rel.sha256_url || (rel.iso && rel.iso.sha256)) {
           shaEl.style.display = "block";
           const link = rel.sha256_url ? '<a href="' + rel.sha256_url + '">SHA256 checksum</a>' : "";
           const sha  = rel.iso && rel.iso.sha256 ? '<br><span style="color:#c9d1d9">' + rel.iso.sha256 + '</span>' : "";
-          shaEl.innerHTML = '<strong>Verify:</strong> ' + link + ' — <code>sha256sum -c rinux-latest.iso.sha256</code>' + sha;
+          const commit = rel.commit ? '<br>commit ' + rel.commit : "";
+          shaEl.innerHTML = '<strong>Verify:</strong> ' + link + ' — <code>sha256sum -c rinux-dev-latest.iso.sha256</code>' + sha + commit;
         }
       } else {
         intro.textContent = "No release published yet. Check back soon.";
